@@ -35,7 +35,7 @@
             resize: vertical;
         }
 
-        input[type="submit"] {
+        input[type="submit"],button {
             background-color: #4CAF50;
             color: white;
             padding: 8px 12px;
@@ -110,7 +110,7 @@
         <!-- 添加隐藏的索引路径字段 -->
         <input type="hidden" name="json_index" value="{{ data.json_index }}">
         <input type="text" id="json_value" name="json_value" value="{{ data.json_value }}" size="100" readonly>
-        <br>
+        <br><br>
         <!-- 添加修改和保存按钮 -->
         <button id="edit_index_btn" type="button" onclick="enableEdit()">修改索引值</button>
         <button id="save_index_btn" type="button" style="display:none" onclick="saveIndexValue()">保存索引值</button>
