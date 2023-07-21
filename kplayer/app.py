@@ -1,6 +1,7 @@
 # app.py
 import json
 import os
+
 from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 
@@ -37,7 +38,8 @@ def get_current_data(json_data, index_path):
 
 
 @app.get("/")
-def read_item(request: Request, json_path: str = default_json_path, json_index: str = ".".join(str(item) for item in default_json_index)):
+def read_item(request: Request, json_path: str = default_json_path,
+              json_index: str = ".".join(str(item) for item in default_json_index)):
     # 读取指定json文件内容
     json_data = read_json(json_path)
 
@@ -55,9 +57,10 @@ def read_item(request: Request, json_path: str = default_json_path, json_index: 
 
     return templates.TemplateResponse("index.html", {"request": request, "data": display_data})
 
-
 @app.post("/")
-def update_json(request: Request, json_path: str = Form(default=default_json_path), json_index: str = Form(default=".".join(str(item) for item in default_json_index)), json_content: str = Form(...)):
+def update_json(request: Request, json_path: str = Form(default=default_json_path),
+                json_index: str = Form(default=".".join(str(item) for item in default_json_index)),
+                json_content: str = Form(...)):
     try:
         # 将用户输入的json内容保存到指定json文件
         json_data = json.loads(json_content)
@@ -160,4 +163,5 @@ def update_index_value(request: Request, json_index: str = Form(...), json_value
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
