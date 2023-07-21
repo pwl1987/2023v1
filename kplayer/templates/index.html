@@ -1,0 +1,123 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSON编辑器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-top: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        function enableEdit() {
+            // 将索引值文本框设置为可编辑
+            document.getElementById("json_value").readOnly = false;
+            document.getElementById("save_index_btn").style.display = "inline";
+            document.getElementById("edit_index_btn").style.display = "none";
+        }
+
+        function saveIndexValue() {
+            // 获取修改后的索引值
+            var newIndexValue = document.getElementById("json_value").value;
+
+            // 将修改后的索引值提交到后端
+            fetch("/update_index_value/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "json_index=" + encodeURIComponent("{{ data.json_index }}") + "&json_value=" + encodeURIComponent(newIndexValue)
+            }).then(response => {
+                if (response.ok) {
+                    // 提交成功，刷新页面以获取最新的索引值
+                    location.reload();
+                } else {
+                    // 提交失败，显示错误消息
+                    alert("保存索引值失败！");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>JSON编辑器</h1>
+
+    <form action="/" method="post">
+        <h2>JSON文件地址</h2>
+        <input type="text" name="json_path" value="{{ data.json_path }}" size="100">
+        <br><br>
+        <h2>JSON文件内容</h2>
+        <textarea name="json_content" cols="80" rows="20">{{ data.json_content }}</textarea>
+        <br>
+        <input type="submit" value="保存JSON文件">
+    </form>
+
+    <form action="/update_index/" method="post">
+        <h2>索引路径</h2>
+        <input type="text" name="json_index" value="{{ data.json_index }}" size="100">
+        <br><br>
+        <input type="submit" name="update_index" value="保存索引路径">
+    </form>
+
+    <form action="/get_index_value/" method="post">
+        <h2>索引值</h2>
+        <!-- 添加隐藏的索引路径字段 -->
+        <input type="hidden" name="json_index" value="{{ data.json_index }}">
+        <input type="text" id="json_value" name="json_value" value="{{ data.json_value }}" size="100" readonly>
+        <br>
+        <!-- 添加修改和保存按钮 -->
+        <button id="edit_index_btn" type="button" onclick="enableEdit()">修改索引值</button>
+        <button id="save_index_btn" type="button" style="display:none" onclick="saveIndexValue()">保存索引值</button>
+    </form>
+
+    {% if error_msg %}
+    <div class="error">{{ error_msg }}</div>
+    {% endif %}
+</body>
+</html>
